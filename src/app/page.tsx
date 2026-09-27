@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { getAddress } from "viem";
+import { getAddress, createWalletClient, custom } from "viem";
 import { SiweMessage } from "siwe";
 
 /* ── Reel metadata (mirrored from server for display) ── */
@@ -11,12 +11,13 @@ interface ReelMeta {
   description: string;
   totalFrames: number;
   price: string;
+  coverUrl: string;
 }
 
 const REELS: ReelMeta[] = [
-  { id: "reel-1", title: "Sunrise over the Ghats", description: "A digitised reel capturing dawn light on ancient stone steps.", totalFrames: 4, price: "$0.01" },
-  { id: "reel-2", title: "Monsoon in Munnar", description: "Tea plantations wrapped in rolling fog after the first rains.", totalFrames: 4, price: "$0.01" },
-  { id: "reel-3", title: "Festival of Lights", description: "Diyas and lanterns illuminating a crowded market lane.", totalFrames: 4, price: "$0.01" },
+  { id: "reel-1", title: "Sunrise over the Ghats", description: "A digitised reel capturing dawn light on ancient stone steps.", totalFrames: 4, price: "$0.01", coverUrl: "/covers/cover_sunrise.jpg" },
+  { id: "reel-2", title: "Monsoon in Munnar", description: "Tea plantations wrapped in rolling fog after the first rains.", totalFrames: 4, price: "$0.01", coverUrl: "/covers/cover_munnar.jpg" },
+  { id: "reel-3", title: "Festival of Lights", description: "Diyas and lanterns illuminating a crowded market lane.", totalFrames: 4, price: "$0.01", coverUrl: "/covers/cover_festival.jpg" },
 ];
 
 export default function HomePage() {
@@ -98,10 +99,14 @@ export default function HomePage() {
       const origin = window.location.origin;
       const message = `${domain} wants you to sign in with your Ethereum account:\n${address}\n\nSign in to The Bioscope to restore your reel purchases.\n\nURI: ${origin}\nVersion: 1\nChain ID: 84532\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}`;
 
-      // 4. Sign
-      const signature = await ethereum.request({
-        method: "personal_sign",
-        params: [message, address],
+      // 4. Sign using viem (safely handles hex encoding and MetaMask quirks)
+      const walletClient = createWalletClient({
+        transport: custom(ethereum)
+      });
+      
+      const signature = await walletClient.signMessage({
+        account: address,
+        message: message,
       });
 
       // 5. Verify with server
@@ -156,7 +161,7 @@ export default function HomePage() {
             <div key={reel.id} className="reel-card" onClick={() => openReel(reel)}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`/api/reels/${reel.id}/frame/0`}
+                src={reel.coverUrl}
                 alt={reel.title}
                 className="reel-preview"
               />
