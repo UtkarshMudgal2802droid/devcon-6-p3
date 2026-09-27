@@ -12,7 +12,7 @@ import { hasPurchased, recordPurchase } from "@/lib/db";
 const PRIVATE_ASSETS_DIR = path.join(process.cwd(), "private_assets", "reels");
 
 function getFramePath(reelId: string, frameIndex: number): string {
-  return path.join(PRIVATE_ASSETS_DIR, reelId, `frame-${frameIndex}.png`);
+  return path.join(PRIVATE_ASSETS_DIR, reelId, `frame-${frameIndex}.jpg`);
 }
 
 function serveImage(framePath: string): NextResponse {
@@ -20,7 +20,7 @@ function serveImage(framePath: string): NextResponse {
   return new NextResponse(buffer, {
     status: 200,
     headers: {
-      "Content-Type": "image/png",
+      "Content-Type": "image/jpeg",
       "Cache-Control": "private, no-store",
     },
   });
