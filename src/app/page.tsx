@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { getAddress } from "viem";
+import { SiweMessage } from "siwe";
 
 /* ── Reel metadata (mirrored from server for display) ── */
 interface ReelMeta {
@@ -92,21 +93,10 @@ export default function HomePage() {
       const nonceRes = await fetch("/api/auth/nonce");
       const { nonce } = await nonceRes.json();
 
-      // 3. Construct SIWE message
+      // 3. Construct SIWE message manually to avoid client-side library issues
       const domain = window.location.host;
       const origin = window.location.origin;
-      const message = [
-        `${domain} wants you to sign in with your Ethereum account:`,
-        address,
-        "",
-        "Sign in to The Bioscope to restore your reel purchases.",
-        "",
-        `URI: ${origin}`,
-        `Version: 1`,
-        `Chain ID: 84532`,
-        `Nonce: ${nonce}`,
-        `Issued At: ${new Date().toISOString()}`,
-      ].join("\n");
+      const message = `${domain} wants you to sign in with your Ethereum account:\n${address}\n\nSign in to The Bioscope to restore your reel purchases.\n\nURI: ${origin}\nVersion: 1\nChain ID: 84532\nNonce: ${nonce}\nIssued At: ${new Date().toISOString()}`;
 
       // 4. Sign
       const signature = await ethereum.request({
