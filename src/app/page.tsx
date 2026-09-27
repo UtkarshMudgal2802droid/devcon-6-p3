@@ -146,8 +146,12 @@ export default function HomePage() {
       {/* Header */}
       <header className="header">
         <div className="logo">The Bioscope</div>
-        <button className={`wallet-btn ${walletAddress ? "connected" : ""}`} onClick={signIn}>
-          {walletAddress ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}` : "Connect Wallet"}
+        <button 
+          className={`wallet-btn ${walletAddress ? "connected" : ""}`} 
+          onClick={walletAddress ? () => setWalletAddress(null) : signIn}
+          title={walletAddress ? "Click to disconnect" : "Connect Wallet"}
+        >
+          {walletAddress ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)} (Disconnect)` : "Connect Wallet"}
         </button>
       </header>
 
