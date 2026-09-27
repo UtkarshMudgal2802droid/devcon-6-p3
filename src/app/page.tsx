@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { getAddress } from "viem";
 
 /* ── Reel metadata (mirrored from server for display) ── */
 interface ReelMeta {
@@ -83,9 +84,9 @@ export default function HomePage() {
     try {
       const ethereum = (window as unknown as { ethereum: { request: (args: { method: string; params?: unknown[] }) => Promise<string[]> } }).ethereum;
 
-      // 1. Request accounts
+      // 1. Request accounts and checksum the address (SIWE requires EIP-55)
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-      const address = accounts[0]!;
+      const address = getAddress(accounts[0]!); // viem checksums the address
 
       // 2. Get server nonce
       const nonceRes = await fetch("/api/auth/nonce");
