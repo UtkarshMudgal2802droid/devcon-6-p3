@@ -32,10 +32,11 @@ export function getDb(): Database.Database {
 }
 
 // ── Nonce helpers ──
+import { generateNonce } from "siwe";
 
 export function createNonce(): string {
   const db = getDb();
-  const nonce = crypto.randomUUID();
+  const nonce = generateNonce();
   const id = crypto.randomUUID();
   const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes TTL
   db.prepare("INSERT INTO nonces (id, nonce, expires_at, used) VALUES (?, ?, ?, 0)").run(id, nonce, expiresAt);

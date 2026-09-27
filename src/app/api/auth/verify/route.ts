@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (err: unknown) {
+    console.error("SIWE verification error on backend:", err);
     const msg = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
